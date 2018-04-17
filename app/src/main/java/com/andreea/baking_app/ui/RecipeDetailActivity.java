@@ -68,6 +68,9 @@ public class RecipeDetailActivity extends AppCompatActivity {
         if (intent != null && intent.hasExtra(RECIPE_KEY)) {
             recipe = intent.getParcelableExtra(RECIPE_KEY);
         }
+        if (recipe == null) {
+            return;
+        }
         toolbar.setTitle(recipe.getName());
         setSupportActionBar(toolbar);
 
@@ -76,7 +79,9 @@ public class RecipeDetailActivity extends AppCompatActivity {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
 
-        ingredientsTitleTv.append(String.format(" (%s servings)", recipe.getServings()));
+        if (recipe.getServings() != 0) {
+            ingredientsTitleTv.append(String.format(" (%s servings)", recipe.getServings()));
+        }
         List<Ingredient> ingredients = recipe.getIngredients();
         StringBuilder ingredientsFormatter = new StringBuilder();
         for (Ingredient ingredient : ingredients) {
@@ -119,6 +124,7 @@ public class RecipeDetailActivity extends AppCompatActivity {
         private final View.OnClickListener mOnClickListener = new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                // TODO: 17.04.2018 make card selected
                 Step item = (Step) view.getTag();
                 if (mTwoPane) {
                     Bundle arguments = new Bundle();

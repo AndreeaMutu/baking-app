@@ -1,8 +1,7 @@
 package com.andreea.baking_app.ui;
 
-import android.app.Activity;
-import android.support.design.widget.CollapsingToolbarLayout;
 import android.os.Bundle;
+import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -28,9 +27,6 @@ public class StepDetailFragment extends Fragment {
      */
     private Step mItem;
 
-    @BindView(R.id.toolbar_layout)
-    CollapsingToolbarLayout appBarLayout;
-
     @BindView(R.id.step_detail_tv)
     TextView stepDescriptionTv;
 
@@ -42,18 +38,27 @@ public class StepDetailFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.step_detail, container, false);
-        ButterKnife.bind(this, rootView);
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
         Bundle arguments = getArguments();
         if (arguments != null && arguments.containsKey(Constants.ARG_ITEM_STEP)) {
             mItem = arguments.getParcelable(Constants.ARG_ITEM_STEP);
         }
 
-        if (mItem != null) {
+        CollapsingToolbarLayout appBarLayout = getActivity().findViewById(R.id.toolbar_layout);
+        if (appBarLayout != null) {
             appBarLayout.setTitle(mItem.getShortDescription());
+        }
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        View rootView = inflater.inflate(R.layout.step_detail, container, false);
+        ButterKnife.bind(this, rootView);
+
+        if (mItem != null) {
             stepDescriptionTv.setText(mItem.getDescription());
         }
 

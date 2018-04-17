@@ -10,6 +10,7 @@ import android.view.MenuItem;
 import com.andreea.baking_app.R;
 
 import butterknife.BindView;
+import butterknife.ButterKnife;
 
 /**
  * An activity representing a single Step detail screen. This
@@ -25,6 +26,7 @@ public class StepDetailActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_step_detail);
+        ButterKnife.bind(this);
         setSupportActionBar(toolbar);
 
         // Show the Up button in the action bar.
