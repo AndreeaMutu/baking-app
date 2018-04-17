@@ -10,7 +10,6 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -19,13 +18,15 @@ import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import com.andreea.baking_app.R;
-import com.andreea.baking_app.dummy.DummyContent;
 import com.andreea.baking_app.model.Recipe;
+import com.andreea.baking_app.model.Step;
 
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+
+import static com.andreea.baking_app.ui.Constants.RECIPE_KEY;
 
 /**
  * An activity representing a list of Steps. This activity
@@ -48,6 +49,10 @@ public class RecipeDetailActivity extends AppCompatActivity {
     @BindView(R.id.step_detail_container)
     @Nullable
     FrameLayout recipeDetailContainer;
+    @BindView(R.id.step_list)
+    RecyclerView recyclerView;
+
+    private Recipe recipe;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,11 +60,10 @@ public class RecipeDetailActivity extends AppCompatActivity {
         setContentView(R.layout.activity_recipe_detail);
         ButterKnife.bind(this);
         Intent intent = getIntent();
-        if (intent != null && intent.hasExtra("recipe")) {
-            Log.d(TAG, "onCreate: toolbar");
-            Recipe recipe = intent.getParcelableExtra("recipe");
-            toolbar.setTitle(recipe.getName());
+        if (intent != null && intent.hasExtra(RECIPE_KEY)) {
+            recipe = intent.getParcelableExtra(RECIPE_KEY);
         }
+        toolbar.setTitle(recipe.getName());
         setSupportActionBar(toolbar);
 
         ActionBar actionBar = getSupportActionBar();
@@ -67,7 +71,7 @@ public class RecipeDetailActivity extends AppCompatActivity {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
 
-        if (findViewById(R.id.step_detail_container) != null) {
+        if (recipeDetailContainer != null) {
             // The detail container view will be present only in the
             // large-screen layouts (res/values-w900dp).
             // If this view is present, then the
@@ -75,9 +79,8 @@ public class RecipeDetailActivity extends AppCompatActivity {
             mTwoPane = true;
         }
 
-        View recyclerView = findViewById(R.id.step_list);
         assert recyclerView != null;
-        setupRecyclerView((RecyclerView) recyclerView);
+        setupRecyclerView(recyclerView);
     }
 
     @Override
@@ -98,22 +101,22 @@ public class RecipeDetailActivity extends AppCompatActivity {
     }
 
     private void setupRecyclerView(@NonNull RecyclerView recyclerView) {
-        recyclerView.setAdapter(new SimpleItemRecyclerViewAdapter(this, DummyContent.ITEMS, mTwoPane));
+        recyclerView.setAdapter(new StepListAdapter(this, recipe.getSteps(), mTwoPane));
     }
 
-    public static class SimpleItemRecyclerViewAdapter
-            extends RecyclerView.Adapter<SimpleItemRecyclerViewAdapter.ViewHolder> {
+    public static class StepListAdapter
+            extends RecyclerView.Adapter<StepListAdapter.ViewHolder> {
 
         private final RecipeDetailActivity mParentActivity;
-        private final List<DummyContent.DummyItem> mValues;
+        private final List<Step> mValues;
         private final boolean mTwoPane;
         private final View.OnClickListener mOnClickListener = new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                DummyContent.DummyItem item = (DummyContent.DummyItem) view.getTag();
+                Step item = (Step) view.getTag();
                 if (mTwoPane) {
                     Bundle arguments = new Bundle();
-                    arguments.putString(StepDetailFragment.ARG_ITEM_ID, item.id);
+                    arguments.putParcelable(Constants.ARG_ITEM_STEP, item);
                     StepDetailFragment fragment = new StepDetailFragment();
                     fragment.setArguments(arguments);
                     mParentActivity.getSupportFragmentManager().beginTransaction()
@@ -122,16 +125,16 @@ public class RecipeDetailActivity extends AppCompatActivity {
                 } else {
                     Context context = view.getContext();
                     Intent intent = new Intent(context, StepDetailActivity.class);
-                    intent.putExtra(StepDetailFragment.ARG_ITEM_ID, item.id);
+                    intent.putExtra(Constants.ARG_ITEM_STEP, item);
 
                     context.startActivity(intent);
                 }
             }
         };
 
-        SimpleItemRecyclerViewAdapter(RecipeDetailActivity parent,
-                                      List<DummyContent.DummyItem> items,
-                                      boolean twoPane) {
+        StepListAdapter(RecipeDetailActivity parent,
+                        List<Step> items,
+                        boolean twoPane) {
             mValues = items;
             mParentActivity = parent;
             mTwoPane = twoPane;
@@ -146,8 +149,8 @@ public class RecipeDetailActivity extends AppCompatActivity {
 
         @Override
         public void onBindViewHolder(final ViewHolder holder, int position) {
-            holder.mIdView.setText(mValues.get(position).id);
-            holder.mContentView.setText(mValues.get(position).content);
+            holder.mIdView.setText(mValues.get(position).getId());
+            holder.mContentView.setText(mValues.get(position).getShortDescription());
 
             holder.itemView.setTag(mValues.get(position));
             holder.itemView.setOnClickListener(mOnClickListener);

@@ -30,6 +30,8 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
+import static com.andreea.baking_app.ui.Constants.RECIPE_KEY;
+
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = MainActivity.class.getSimpleName();
     @BindView(R.id.toolbar)
@@ -68,7 +70,7 @@ public class MainActivity extends AppCompatActivity {
                 Recipe item = (Recipe) view.getTag();
                 Context context = view.getContext();
                 Intent intent = new Intent(context, RecipeDetailActivity.class);
-                intent.putExtra("recipe", item);
+                intent.putExtra(RECIPE_KEY, item);
                 context.startActivity(intent);
             }
         };
