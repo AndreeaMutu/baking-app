@@ -9,6 +9,8 @@ import android.view.MenuItem;
 
 import com.andreea.baking_app.R;
 
+import butterknife.BindView;
+
 /**
  * An activity representing a single Step detail screen. This
  * activity is only used on narrow width devices. On tablet-size devices,
@@ -16,12 +18,13 @@ import com.andreea.baking_app.R;
  * in a {@link RecipeDetailActivity}.
  */
 public class StepDetailActivity extends AppCompatActivity {
+    @BindView(R.id.detail_toolbar)
+    Toolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_step_detail);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.detail_toolbar);
         setSupportActionBar(toolbar);
 
         // Show the Up button in the action bar.
@@ -57,12 +60,6 @@ public class StepDetailActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == android.R.id.home) {
-            // This ID represents the Home or Up button. In the case of this
-            // activity, the Up button is shown. For
-            // more details, see the Navigation pattern on Android Design:
-            //
-            // http://developer.android.com/design/patterns/navigation.html#up-vs-back
-            //
             navigateUpTo(new Intent(this, RecipeDetailActivity.class));
             return true;
         }

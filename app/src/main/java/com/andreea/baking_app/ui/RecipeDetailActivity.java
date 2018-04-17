@@ -87,13 +87,6 @@ public class RecipeDetailActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == android.R.id.home) {
-            // This ID represents the Home or Up button. In the case of this
-            // activity, the Up button is shown. Use NavUtils to allow users
-            // to navigate up one level in the application structure. For
-            // more details, see the Navigation pattern on Android Design:
-            //
-            // http://developer.android.com/design/patterns/navigation.html#up-vs-back
-            //
             NavUtils.navigateUpFromSameTask(this);
             return true;
         }
@@ -108,7 +101,7 @@ public class RecipeDetailActivity extends AppCompatActivity {
             extends RecyclerView.Adapter<StepListAdapter.ViewHolder> {
 
         private final RecipeDetailActivity mParentActivity;
-        private final List<Step> mValues;
+        private final List<Step> mSteps;
         private final boolean mTwoPane;
         private final View.OnClickListener mOnClickListener = new View.OnClickListener() {
             @Override
@@ -135,7 +128,7 @@ public class RecipeDetailActivity extends AppCompatActivity {
         StepListAdapter(RecipeDetailActivity parent,
                         List<Step> items,
                         boolean twoPane) {
-            mValues = items;
+            mSteps = items;
             mParentActivity = parent;
             mTwoPane = twoPane;
         }
@@ -149,26 +142,27 @@ public class RecipeDetailActivity extends AppCompatActivity {
 
         @Override
         public void onBindViewHolder(final ViewHolder holder, int position) {
-            holder.mIdView.setText(mValues.get(position).getId());
-            holder.mContentView.setText(mValues.get(position).getShortDescription());
+            holder.mIdView.setText(String.valueOf(mSteps.get(position).getId()));
+            holder.mContentView.setText(mSteps.get(position).getShortDescription());
 
-            holder.itemView.setTag(mValues.get(position));
+            holder.itemView.setTag(mSteps.get(position));
             holder.itemView.setOnClickListener(mOnClickListener);
         }
 
         @Override
         public int getItemCount() {
-            return mValues.size();
+            return mSteps.size();
         }
 
         class ViewHolder extends RecyclerView.ViewHolder {
-            final TextView mIdView;
-            final TextView mContentView;
+            @BindView(R.id.id_text)
+            TextView mIdView;
+            @BindView(R.id.content)
+            TextView mContentView;
 
             ViewHolder(View view) {
                 super(view);
-                mIdView = (TextView) view.findViewById(R.id.id_text);
-                mContentView = (TextView) view.findViewById(R.id.content);
+                ButterKnife.bind(this, itemView);
             }
         }
     }
