@@ -18,6 +18,7 @@ import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import com.andreea.baking_app.R;
+import com.andreea.baking_app.model.Ingredient;
 import com.andreea.baking_app.model.Recipe;
 import com.andreea.baking_app.model.Step;
 
@@ -51,6 +52,10 @@ public class RecipeDetailActivity extends AppCompatActivity {
     FrameLayout recipeDetailContainer;
     @BindView(R.id.step_list)
     RecyclerView recyclerView;
+    @BindView(R.id.ingredients_title_tv)
+    TextView ingredientsTitleTv;
+    @BindView(R.id.recipe_ingredients_tv)
+    TextView ingredientsTv;
 
     private Recipe recipe;
 
@@ -70,6 +75,14 @@ public class RecipeDetailActivity extends AppCompatActivity {
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
+
+        ingredientsTitleTv.append(String.format(" (%s servings)", recipe.getServings()));
+        List<Ingredient> ingredients = recipe.getIngredients();
+        StringBuilder ingredientsFormatter = new StringBuilder();
+        for (Ingredient ingredient : ingredients) {
+            ingredientsFormatter.append(String.format("\u2022 %s %s %s \n", ingredient.getQuantity(), ingredient.getMeasure(), ingredient.getIngredient()));
+        }
+        ingredientsTv.setText(ingredientsFormatter.toString());
 
         if (recipeDetailContainer != null) {
             // The detail container view will be present only in the
