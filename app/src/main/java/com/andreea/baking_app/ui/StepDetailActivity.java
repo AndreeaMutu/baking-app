@@ -48,8 +48,8 @@ public class StepDetailActivity extends AppCompatActivity {
             // Create the detail fragment and add it to the activity
             // using a fragment transaction.
             Bundle arguments = new Bundle();
-            arguments.putParcelable(Constants.ARG_ITEM_STEP,
-                    getIntent().getParcelableExtra(Constants.ARG_ITEM_STEP));
+            arguments.putParcelable(Constants.STEP_KEY,
+                    getIntent().getParcelableExtra(Constants.STEP_KEY));
             StepDetailFragment fragment = new StepDetailFragment();
             fragment.setArguments(arguments);
             getSupportFragmentManager().beginTransaction()

@@ -1,8 +1,10 @@
 package com.andreea.baking_app.ui;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,7 +27,7 @@ public class StepDetailFragment extends Fragment {
     /**
      * The recipe Step this fragment is presenting.
      */
-    private Step mItem;
+    private Step step;
 
     @BindView(R.id.step_detail_tv)
     TextView stepDescriptionTv;
@@ -40,28 +42,36 @@ public class StepDetailFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        Bundle arguments = getArguments();
-        if (arguments != null && arguments.containsKey(Constants.ARG_ITEM_STEP)) {
-            mItem = arguments.getParcelable(Constants.ARG_ITEM_STEP);
-        }
-
-        CollapsingToolbarLayout appBarLayout = getActivity().findViewById(R.id.toolbar_layout);
-        if (appBarLayout != null) {
-            appBarLayout.setTitle(mItem.getShortDescription());
+        if (savedInstanceState != null) {
+            step = savedInstanceState.getParcelable(Constants.STEP_KEY);
+        } else {
+            Bundle arguments = getArguments();
+            if (arguments != null && arguments.containsKey(Constants.STEP_KEY)) {
+                step = arguments.getParcelable(Constants.STEP_KEY);
+            }
         }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        Log.d("RecipeFrag", "onCreateView: " + (savedInstanceState != null));
         View rootView = inflater.inflate(R.layout.step_detail, container, false);
         ButterKnife.bind(this, rootView);
 
-        if (mItem != null) {
-            stepDescriptionTv.setText(mItem.getDescription());
+        if (step != null) {
+            stepDescriptionTv.setText(step.getDescription());
+            CollapsingToolbarLayout appBarLayout = getActivity().findViewById(R.id.toolbar_layout);
+            if (appBarLayout != null) {
+                appBarLayout.setTitle(step.getShortDescription());
+            }
         }
-
         return rootView;
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putParcelable(Constants.STEP_KEY, step);
     }
 }

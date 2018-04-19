@@ -3,6 +3,7 @@ package com.andreea.baking_app.ui;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NavUtils;
@@ -58,22 +59,26 @@ public class RecipeDetailActivity extends AppCompatActivity {
     TextView ingredientsTv;
 
     private Recipe recipe;
+    private Parcelable recyclerViewState;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_recipe_detail);
         ButterKnife.bind(this);
-        Intent intent = getIntent();
-        if (intent != null && intent.hasExtra(RECIPE_KEY)) {
-            recipe = intent.getParcelableExtra(RECIPE_KEY);
+        if (savedInstanceState != null) {
+            recipe = savedInstanceState.getParcelable(RECIPE_KEY);
+        } else {
+            Intent intent = getIntent();
+            if (intent != null && intent.hasExtra(RECIPE_KEY)) {
+                recipe = intent.getParcelableExtra(RECIPE_KEY);
+            }
         }
         if (recipe == null) {
             return;
         }
         toolbar.setTitle(recipe.getName());
         setSupportActionBar(toolbar);
-
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
@@ -99,6 +104,12 @@ public class RecipeDetailActivity extends AppCompatActivity {
 
         assert recyclerView != null;
         setupRecyclerView(recyclerView);
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putParcelable(RECIPE_KEY, recipe);
     }
 
     @Override
@@ -128,7 +139,7 @@ public class RecipeDetailActivity extends AppCompatActivity {
                 Step item = (Step) view.getTag();
                 if (mTwoPane) {
                     Bundle arguments = new Bundle();
-                    arguments.putParcelable(Constants.ARG_ITEM_STEP, item);
+                    arguments.putParcelable(Constants.STEP_KEY, item);
                     StepDetailFragment fragment = new StepDetailFragment();
                     fragment.setArguments(arguments);
                     mParentActivity.getSupportFragmentManager().beginTransaction()
@@ -137,7 +148,7 @@ public class RecipeDetailActivity extends AppCompatActivity {
                 } else {
                     Context context = view.getContext();
                     Intent intent = new Intent(context, StepDetailActivity.class);
-                    intent.putExtra(Constants.ARG_ITEM_STEP, item);
+                    intent.putExtra(Constants.STEP_KEY, item);
 
                     context.startActivity(intent);
                 }

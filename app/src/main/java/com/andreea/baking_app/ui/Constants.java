@@ -7,7 +7,7 @@ public final class Constants {
      * The fragment argument representing the item that this fragment
      * represents.
      */
-    public static final String ARG_ITEM_STEP = "item_step";
+    public static final String STEP_KEY = "item_step";
 
     private Constants() {
     }
