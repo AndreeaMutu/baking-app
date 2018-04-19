@@ -1,12 +1,10 @@
 package com.andreea.baking_app.ui;
 
-import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -16,6 +14,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.andreea.baking_app.R;
@@ -38,6 +37,8 @@ public class MainActivity extends AppCompatActivity {
     Toolbar toolbar;
     @BindView(R.id.recipe_list)
     RecyclerView recyclerView;
+    @BindView(R.id.recipes_loading_pb)
+    ProgressBar progressBar;
 
     private RecipesViewModel recipesViewModel;
 
@@ -51,12 +52,10 @@ public class MainActivity extends AppCompatActivity {
         toolbar.setTitle(getTitle());
 
         recipesViewModel = ViewModelProviders.of(this).get(RecipesViewModel.class);
-
-        recipesViewModel.getRecipes().observe(this, new Observer<List<Recipe>>() {
-            @Override
-            public void onChanged(@Nullable List<Recipe> recipes) {
-                recyclerView.setAdapter(new RecipeListAdapter(recipes));
-            }
+        progressBar.setVisibility(View.VISIBLE);
+        recipesViewModel.getRecipes().observe(this, recipes -> {
+            recyclerView.setAdapter(new RecipeListAdapter(recipes));
+            progressBar.setVisibility(View.GONE);
         });
     }
 
@@ -64,15 +63,12 @@ public class MainActivity extends AppCompatActivity {
             extends RecyclerView.Adapter<RecipeListAdapter.ViewHolder> {
 
         private final List<Recipe> mValues;
-        private final View.OnClickListener mOnClickListener = new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Recipe item = (Recipe) view.getTag();
-                Context context = view.getContext();
-                Intent intent = new Intent(context, RecipeDetailActivity.class);
-                intent.putExtra(RECIPE_KEY, item);
-                context.startActivity(intent);
-            }
+        private final View.OnClickListener mOnClickListener = view -> {
+            Recipe item = (Recipe) view.getTag();
+            Context context = view.getContext();
+            Intent intent = new Intent(context, RecipeDetailActivity.class);
+            intent.putExtra(RECIPE_KEY, item);
+            context.startActivity(intent);
         };
 
         RecipeListAdapter(List<Recipe> items   ) {
