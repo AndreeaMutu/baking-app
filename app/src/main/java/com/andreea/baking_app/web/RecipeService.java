@@ -1,4 +1,4 @@
-package com.andreea.baking_app.repository;
+package com.andreea.baking_app.web;
 
 import com.andreea.baking_app.model.Recipe;
 

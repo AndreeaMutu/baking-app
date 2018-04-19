@@ -6,7 +6,7 @@ import android.arch.lifecycle.ViewModel;
 import android.util.Log;
 
 import com.andreea.baking_app.model.Recipe;
-import com.andreea.baking_app.repository.RecipeService;
+import com.andreea.baking_app.web.RecipeService;
 
 import java.util.Collections;
 import java.util.List;
