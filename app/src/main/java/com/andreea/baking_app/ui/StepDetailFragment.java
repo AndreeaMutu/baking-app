@@ -42,11 +42,11 @@ public class StepDetailFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (savedInstanceState != null) {
-            step = savedInstanceState.getParcelable(Constants.STEP_POS_KEY);
+            step = savedInstanceState.getParcelable(Constants.STEP_KEY);
         } else {
             Bundle arguments = getArguments();
-            if (arguments != null && arguments.containsKey(Constants.STEP_POS_KEY)) {
-                step = arguments.getParcelable(Constants.STEP_POS_KEY);
+            if (arguments != null && arguments.containsKey(Constants.STEP_KEY)) {
+                step = arguments.getParcelable(Constants.STEP_KEY);
             }
         }
     }
@@ -70,6 +70,6 @@ public class StepDetailFragment extends Fragment {
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putParcelable(Constants.STEP_POS_KEY, step);
+        outState.putParcelable(Constants.STEP_KEY, step);
     }
 }

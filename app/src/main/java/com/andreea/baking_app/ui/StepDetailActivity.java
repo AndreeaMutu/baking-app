@@ -2,6 +2,7 @@ package com.andreea.baking_app.ui;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -65,6 +66,9 @@ public class StepDetailActivity extends AppCompatActivity {
             steps = intent.getParcelableArrayListExtra(Constants.STEP_LIST_KEY);
             displayFragment(steps, stepPosition);
             displayNavigationButtons();
+        } else {
+            stepPosition = savedInstanceState.getInt(Constants.STEP_POS_KEY, 0);
+            steps = savedInstanceState.getParcelableArrayList(Constants.STEP_LIST_KEY);
         }
 
         nextStepFab.setOnClickListener(v -> {
@@ -97,7 +101,7 @@ public class StepDetailActivity extends AppCompatActivity {
         StepDetailFragment fragment = new StepDetailFragment();
         fragment.setArguments(arguments);
         getSupportFragmentManager().beginTransaction()
-                .add(R.id.step_detail_container, fragment)
+                .replace(R.id.step_detail_container, fragment)
                 .commit();
     }
 
@@ -109,5 +113,12 @@ public class StepDetailActivity extends AppCompatActivity {
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putParcelableArrayList(Constants.STEP_LIST_KEY, (ArrayList<? extends Parcelable>) steps);
+        outState.putInt(Constants.STEP_POS_KEY, stepPosition);
     }
 }
