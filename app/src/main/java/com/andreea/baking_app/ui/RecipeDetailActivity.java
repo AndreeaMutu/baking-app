@@ -23,12 +23,14 @@ import com.andreea.baking_app.model.Ingredient;
 import com.andreea.baking_app.model.Recipe;
 import com.andreea.baking_app.model.Step;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
 import static com.andreea.baking_app.ui.Constants.RECIPE_KEY;
+import static com.andreea.baking_app.ui.Constants.STEP_LIST_KEY;
 
 /**
  * An activity representing a list of Steps. This activity
@@ -136,10 +138,10 @@ public class RecipeDetailActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 // TODO: 17.04.2018 make card selected
-                Step item = (Step) view.getTag();
+                int position = (int) view.getTag();
                 if (mTwoPane) {
                     Bundle arguments = new Bundle();
-                    arguments.putParcelable(Constants.STEP_KEY, item);
+                    arguments.putParcelable(Constants.STEP_KEY, mSteps.get(position));
                     StepDetailFragment fragment = new StepDetailFragment();
                     fragment.setArguments(arguments);
                     mParentActivity.getSupportFragmentManager().beginTransaction()
@@ -148,8 +150,8 @@ public class RecipeDetailActivity extends AppCompatActivity {
                 } else {
                     Context context = view.getContext();
                     Intent intent = new Intent(context, StepDetailActivity.class);
-                    intent.putExtra(Constants.STEP_KEY, item);
-
+                    intent.putExtra(Constants.STEP_POS_KEY, position);
+                    intent.putParcelableArrayListExtra(STEP_LIST_KEY, (ArrayList<? extends Parcelable>) mSteps);
                     context.startActivity(intent);
                 }
             }
@@ -172,10 +174,11 @@ public class RecipeDetailActivity extends AppCompatActivity {
 
         @Override
         public void onBindViewHolder(final ViewHolder holder, int position) {
-            holder.mIdView.setText(String.valueOf(mSteps.get(position).getId()));
-            holder.mContentView.setText(mSteps.get(position).getShortDescription());
+            Step step = mSteps.get(position);
+            holder.mIdView.setText(String.valueOf(step.getId()));
+            holder.mContentView.setText(step.getShortDescription());
 
-            holder.itemView.setTag(mSteps.get(position));
+            holder.itemView.setTag(position);
             holder.itemView.setOnClickListener(mOnClickListener);
         }
 

@@ -2,12 +2,18 @@ package com.andreea.baking_app.ui;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
+import android.view.View;
 
 import com.andreea.baking_app.R;
+import com.andreea.baking_app.model.Step;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -21,6 +27,13 @@ import butterknife.ButterKnife;
 public class StepDetailActivity extends AppCompatActivity {
     @BindView(R.id.detail_toolbar)
     Toolbar toolbar;
+    @BindView(R.id.previous_step_fab)
+    FloatingActionButton previousStepFab;
+    @BindView(R.id.next_step_fab)
+    FloatingActionButton nextStepFab;
+
+    private List<Step> steps = new ArrayList<>();
+    private int stepPosition;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,15 +60,45 @@ public class StepDetailActivity extends AppCompatActivity {
         if (savedInstanceState == null) {
             // Create the detail fragment and add it to the activity
             // using a fragment transaction.
-            Bundle arguments = new Bundle();
-            arguments.putParcelable(Constants.STEP_KEY,
-                    getIntent().getParcelableExtra(Constants.STEP_KEY));
-            StepDetailFragment fragment = new StepDetailFragment();
-            fragment.setArguments(arguments);
-            getSupportFragmentManager().beginTransaction()
-                    .add(R.id.step_detail_container, fragment)
-                    .commit();
+            Intent intent = getIntent();
+            stepPosition = intent.getIntExtra(Constants.STEP_POS_KEY, 0);
+            steps = intent.getParcelableArrayListExtra(Constants.STEP_LIST_KEY);
+            displayFragment(steps, stepPosition);
+            displayNavigationButtons();
         }
+
+        nextStepFab.setOnClickListener(v -> {
+            stepPosition++;
+            displayNavigationButtons();
+            displayFragment(steps, stepPosition);
+        });
+        previousStepFab.setOnClickListener(v -> {
+            stepPosition--;
+            displayNavigationButtons();
+            displayFragment(steps, stepPosition);
+        });
+    }
+
+    private void displayNavigationButtons() {
+        if (stepPosition == 0) {
+            previousStepFab.setVisibility(View.GONE);
+        } else if (stepPosition == steps.size() - 1) {
+            nextStepFab.setVisibility(View.GONE);
+        } else {
+            previousStepFab.setVisibility(View.VISIBLE);
+            nextStepFab.setVisibility(View.VISIBLE);
+        }
+    }
+
+    private void displayFragment(List<Step> steps, int stepPosition) {
+        Bundle arguments = new Bundle();
+        arguments.putParcelable(Constants.STEP_KEY,
+                steps.get(stepPosition));
+        StepDetailFragment fragment = new StepDetailFragment();
+        fragment.setArguments(arguments);
+        getSupportFragmentManager().beginTransaction()
+                .add(R.id.step_detail_container, fragment)
+                .commit();
     }
 
     @Override
