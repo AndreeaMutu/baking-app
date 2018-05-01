@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.test.espresso.idling.CountingIdlingResource;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -41,6 +42,7 @@ public class MainActivity extends AppCompatActivity {
     ProgressBar progressBar;
 
     private RecipesViewModel recipesViewModel;
+    private CountingIdlingResource recipesIdlingResource = new CountingIdlingResource("RecipesAvailable");;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,10 +55,16 @@ public class MainActivity extends AppCompatActivity {
 
         recipesViewModel = ViewModelProviders.of(this).get(RecipesViewModel.class);
         progressBar.setVisibility(View.VISIBLE);
+        recipesIdlingResource.increment();
         recipesViewModel.getRecipes().observe(this, recipes -> {
             recyclerView.setAdapter(new RecipeListAdapter(recipes));
             progressBar.setVisibility(View.GONE);
+            recipesIdlingResource.decrement();
         });
+    }
+
+    public CountingIdlingResource getRecipesIdlingResource() {
+        return recipesIdlingResource;
     }
 
     public static class RecipeListAdapter
