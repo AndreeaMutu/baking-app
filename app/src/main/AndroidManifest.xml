@@ -35,6 +35,7 @@
         <activity
             android:name=".ui.StepDetailActivity"
             android:label="@string/title_step_detail"
+            android:launchMode="singleTop"
             android:parentActivityName=".ui.RecipeDetailActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data

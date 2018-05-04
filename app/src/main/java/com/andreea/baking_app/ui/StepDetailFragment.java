@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.app.Fragment;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -34,7 +35,7 @@ import butterknife.ButterKnife;
  * on handsets.
  */
 public class StepDetailFragment extends Fragment {
-
+    private static String TAG = StepDetailFragment.class.getSimpleName();
     /**
      * The recipe Step this fragment is presenting.
      */
@@ -46,9 +47,7 @@ public class StepDetailFragment extends Fragment {
     @BindView(R.id.video_view)
     PlayerView playerView;
 
-    // TODO: 02.05.2018 save position
     private long playbackPosition;
-    private int currentWindow;
     private boolean playWhenReady = true;
 
     private SimpleExoPlayer player;
@@ -65,6 +64,8 @@ public class StepDetailFragment extends Fragment {
         super.onCreate(savedInstanceState);
         if (savedInstanceState != null) {
             step = savedInstanceState.getParcelable(Constants.STEP_KEY);
+            playbackPosition = savedInstanceState.getLong(Constants.VIDEO_POSITION_KEY);
+            playWhenReady = savedInstanceState.getBoolean(Constants.VIDEO_READY);
         } else {
             Bundle arguments = getArguments();
             if (arguments != null && arguments.containsKey(Constants.STEP_KEY)) {
@@ -78,7 +79,6 @@ public class StepDetailFragment extends Fragment {
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.step_detail, container, false);
         ButterKnife.bind(this, rootView);
-
         if (step != null) {
             stepDescriptionTv.setText(step.getDescription());
             CollapsingToolbarLayout appBarLayout = getActivity().findViewById(R.id.toolbar_layout);
@@ -93,6 +93,10 @@ public class StepDetailFragment extends Fragment {
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putParcelable(Constants.STEP_KEY, step);
+        if (player != null) {
+            outState.putLong(Constants.VIDEO_POSITION_KEY, player.getCurrentPosition());
+            outState.putBoolean(Constants.VIDEO_READY, player.getPlayWhenReady());
+        }
     }
 
     @Override
@@ -129,22 +133,25 @@ public class StepDetailFragment extends Fragment {
     }
 
     private void initializePlayer() {
+        if (TextUtils.isEmpty(step.getVideoURL())) {
+            playerView.setVisibility(View.GONE);
+            return;
+        }
+        playerView.setVisibility(View.VISIBLE);
         if (player == null) {
             player = ExoPlayerFactory.newSimpleInstance(new DefaultRenderersFactory(getActivity()),
                     new DefaultTrackSelector(), new DefaultLoadControl());
             playerView.setPlayer(player);
+            MediaSource mediaSource = buildMediaSource(Uri.parse((step.getVideoURL())));
+            player.prepare(mediaSource);
+            player.seekTo(playbackPosition);
             player.setPlayWhenReady(playWhenReady);
-            player.seekTo(currentWindow, playbackPosition);
         }
-        // TODO: 02.05.2018 validate url and use thumbnail img
-        MediaSource mediaSource = buildMediaSource(Uri.parse((step.getVideoURL())));
-        player.prepare(mediaSource, true, false);
     }
 
     private void releasePlayer() {
         if (player != null) {
             playbackPosition = player.getCurrentPosition();
-            currentWindow = player.getCurrentWindowIndex();
             playWhenReady = player.getPlayWhenReady();
             player.release();
             player = null;
@@ -158,6 +165,7 @@ public class StepDetailFragment extends Fragment {
 
     @SuppressLint("InlinedApi")
     private void hideSystemUi() {
+        // TODO: 04.05.2018 only if landscape & !tablet
         playerView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE
                 | View.SYSTEM_UI_FLAG_FULLSCREEN
                 | View.SYSTEM_UI_FLAG_LAYOUT_STABLE

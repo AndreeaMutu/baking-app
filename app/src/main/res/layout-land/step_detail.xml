@@ -8,7 +8,7 @@
     <com.google.android.exoplayer2.ui.PlayerView
         android:id="@+id/video_view"
         android:layout_width="match_parent"
-        android:layout_height="200dp" />
+        android:layout_height="match_parent" />
 
     <TextView
         android:id="@+id/step_detail_tv"
@@ -17,6 +17,7 @@
         android:layout_height="wrap_content"
         android:padding="16dp"
         android:textIsSelectable="true"
-        tools:context=".ui.StepDetailFragment" />
+        tools:context=".ui.StepDetailFragment"
+        android:visibility="gone"/>
 
 </LinearLayout>
