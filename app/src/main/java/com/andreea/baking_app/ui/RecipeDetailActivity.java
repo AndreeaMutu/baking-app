@@ -22,6 +22,7 @@ import com.andreea.baking_app.R;
 import com.andreea.baking_app.model.Ingredient;
 import com.andreea.baking_app.model.Recipe;
 import com.andreea.baking_app.model.Step;
+import com.andreea.baking_app.utils.Constants;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,8 +30,8 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-import static com.andreea.baking_app.ui.Constants.RECIPE_KEY;
-import static com.andreea.baking_app.ui.Constants.STEP_LIST_KEY;
+import static com.andreea.baking_app.utils.Constants.RECIPE_KEY;
+import static com.andreea.baking_app.utils.Constants.STEP_LIST_KEY;
 
 /**
  * An activity representing a list of Steps. This activity

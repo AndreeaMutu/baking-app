@@ -1,4 +1,4 @@
-package com.andreea.baking_app.ui;
+package com.andreea.baking_app.utils;
 
 public final class Constants {
 

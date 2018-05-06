@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.Snackbar;
 import android.support.test.espresso.idling.CountingIdlingResource;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
@@ -20,6 +21,7 @@ import android.widget.TextView;
 
 import com.andreea.baking_app.R;
 import com.andreea.baking_app.model.Recipe;
+import com.andreea.baking_app.utils.NetworkUtils;
 import com.andreea.baking_app.viewmodel.RecipesViewModel;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
@@ -30,7 +32,7 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-import static com.andreea.baking_app.ui.Constants.RECIPE_KEY;
+import static com.andreea.baking_app.utils.Constants.RECIPE_KEY;
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = MainActivity.class.getSimpleName();
@@ -40,6 +42,8 @@ public class MainActivity extends AppCompatActivity {
     RecyclerView recyclerView;
     @BindView(R.id.recipes_loading_pb)
     ProgressBar progressBar;
+    @BindView(android.R.id.content)
+    View snackbarView;
 
     private RecipesViewModel recipesViewModel;
     private CountingIdlingResource recipesIdlingResource = new CountingIdlingResource("RecipesAvailable");;
@@ -54,6 +58,10 @@ public class MainActivity extends AppCompatActivity {
         toolbar.setTitle(getTitle());
 
         recipesViewModel = ViewModelProviders.of(this).get(RecipesViewModel.class);
+        if (!NetworkUtils.isConnectedToNetwork(this)){
+            Snackbar.make(snackbarView, getString(R.string.no_internet_message), Snackbar.LENGTH_LONG).show();
+            return;
+        }
         progressBar.setVisibility(View.VISIBLE);
         recipesIdlingResource.increment();
         recipesViewModel.getRecipes().observe(this, recipes -> {

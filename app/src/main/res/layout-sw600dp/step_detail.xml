@@ -3,8 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:layout_margin="@dimen/step_detail_margin">
+    android:layout_margin="@dimen/step_detail_margin"
+    android:orientation="vertical">
 
     <com.google.android.exoplayer2.ui.PlayerView
         android:id="@+id/video_view"
@@ -16,6 +16,7 @@
         style="?android:attr/textAppearanceLarge"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/step_detail_margin"
         android:textIsSelectable="true"
         tools:context=".ui.StepDetailFragment" />
 
