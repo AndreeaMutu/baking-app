@@ -12,7 +12,7 @@ import android.view.View;
 
 import com.andreea.baking_app.R;
 import com.andreea.baking_app.model.Step;
-import com.andreea.baking_app.utils.Constants;
+import com.andreea.baking_app.utils.RecipeUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -63,13 +63,13 @@ public class StepDetailActivity extends AppCompatActivity {
             // Create the detail fragment and add it to the activity
             // using a fragment transaction.
             Intent intent = getIntent();
-            stepPosition = intent.getIntExtra(Constants.STEP_POS_KEY, 0);
-            steps = intent.getParcelableArrayListExtra(Constants.STEP_LIST_KEY);
+            stepPosition = intent.getIntExtra(RecipeUtils.STEP_POS_KEY, 0);
+            steps = intent.getParcelableArrayListExtra(RecipeUtils.STEP_LIST_KEY);
             displayFragment(steps, stepPosition);
             displayNavigationButtons();
         } else {
-            stepPosition = savedInstanceState.getInt(Constants.STEP_POS_KEY, 0);
-            steps = savedInstanceState.getParcelableArrayList(Constants.STEP_LIST_KEY);
+            stepPosition = savedInstanceState.getInt(RecipeUtils.STEP_POS_KEY, 0);
+            steps = savedInstanceState.getParcelableArrayList(RecipeUtils.STEP_LIST_KEY);
         }
 
         nextStepFab.setOnClickListener(v -> {
@@ -97,7 +97,7 @@ public class StepDetailActivity extends AppCompatActivity {
 
     private void displayFragment(List<Step> steps, int stepPosition) {
         Bundle arguments = new Bundle();
-        arguments.putParcelable(Constants.STEP_KEY,
+        arguments.putParcelable(RecipeUtils.STEP_KEY,
                 steps.get(stepPosition));
         StepDetailFragment fragment = new StepDetailFragment();
         fragment.setArguments(arguments);
@@ -119,7 +119,7 @@ public class StepDetailActivity extends AppCompatActivity {
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putParcelableArrayList(Constants.STEP_LIST_KEY, (ArrayList<? extends Parcelable>) steps);
-        outState.putInt(Constants.STEP_POS_KEY, stepPosition);
+        outState.putParcelableArrayList(RecipeUtils.STEP_LIST_KEY, (ArrayList<? extends Parcelable>) steps);
+        outState.putInt(RecipeUtils.STEP_POS_KEY, stepPosition);
     }
 }

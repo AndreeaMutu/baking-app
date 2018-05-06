@@ -13,7 +13,7 @@ import android.widget.TextView;
 
 import com.andreea.baking_app.R;
 import com.andreea.baking_app.model.Step;
-import com.andreea.baking_app.utils.Constants;
+import com.andreea.baking_app.utils.RecipeUtils;
 import com.google.android.exoplayer2.DefaultLoadControl;
 import com.google.android.exoplayer2.DefaultRenderersFactory;
 import com.google.android.exoplayer2.ExoPlayerFactory;
@@ -63,13 +63,13 @@ public class StepDetailFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (savedInstanceState != null) {
-            step = savedInstanceState.getParcelable(Constants.STEP_KEY);
-            playbackPosition = savedInstanceState.getLong(Constants.VIDEO_POSITION_KEY);
-            playWhenReady = savedInstanceState.getBoolean(Constants.VIDEO_READY);
+            step = savedInstanceState.getParcelable(RecipeUtils.STEP_KEY);
+            playbackPosition = savedInstanceState.getLong(RecipeUtils.VIDEO_POSITION_KEY);
+            playWhenReady = savedInstanceState.getBoolean(RecipeUtils.VIDEO_READY);
         } else {
             Bundle arguments = getArguments();
-            if (arguments != null && arguments.containsKey(Constants.STEP_KEY)) {
-                step = arguments.getParcelable(Constants.STEP_KEY);
+            if (arguments != null && arguments.containsKey(RecipeUtils.STEP_KEY)) {
+                step = arguments.getParcelable(RecipeUtils.STEP_KEY);
             }
         }
     }
@@ -92,10 +92,10 @@ public class StepDetailFragment extends Fragment {
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putParcelable(Constants.STEP_KEY, step);
+        outState.putParcelable(RecipeUtils.STEP_KEY, step);
         if (player != null) {
-            outState.putLong(Constants.VIDEO_POSITION_KEY, player.getCurrentPosition());
-            outState.putBoolean(Constants.VIDEO_READY, player.getPlayWhenReady());
+            outState.putLong(RecipeUtils.VIDEO_POSITION_KEY, player.getCurrentPosition());
+            outState.putBoolean(RecipeUtils.VIDEO_READY, player.getPlayWhenReady());
         }
     }
 

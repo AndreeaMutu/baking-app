@@ -32,7 +32,7 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-import static com.andreea.baking_app.utils.Constants.RECIPE_KEY;
+import static com.andreea.baking_app.utils.RecipeUtils.RECIPE_KEY;
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = MainActivity.class.getSimpleName();

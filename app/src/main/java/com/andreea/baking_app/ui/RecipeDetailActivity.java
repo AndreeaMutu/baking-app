@@ -19,10 +19,9 @@ import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import com.andreea.baking_app.R;
-import com.andreea.baking_app.model.Ingredient;
 import com.andreea.baking_app.model.Recipe;
 import com.andreea.baking_app.model.Step;
-import com.andreea.baking_app.utils.Constants;
+import com.andreea.baking_app.utils.RecipeUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,8 +29,9 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-import static com.andreea.baking_app.utils.Constants.RECIPE_KEY;
-import static com.andreea.baking_app.utils.Constants.STEP_LIST_KEY;
+import static com.andreea.baking_app.utils.RecipeUtils.RECIPE_KEY;
+import static com.andreea.baking_app.utils.RecipeUtils.STEP_LIST_KEY;
+import static com.andreea.baking_app.utils.RecipeUtils.formatIngredients;
 
 /**
  * An activity representing a list of Steps. This activity
@@ -90,12 +90,7 @@ public class RecipeDetailActivity extends AppCompatActivity {
         if (recipe.getServings() != 0) {
             ingredientsTitleTv.append(String.format(" (%s servings)", recipe.getServings()));
         }
-        List<Ingredient> ingredients = recipe.getIngredients();
-        StringBuilder ingredientsFormatter = new StringBuilder();
-        for (Ingredient ingredient : ingredients) {
-            ingredientsFormatter.append(String.format("\u2022 %s %s %s \n", ingredient.getQuantity(), ingredient.getMeasure(), ingredient.getIngredient()));
-        }
-        ingredientsTv.setText(ingredientsFormatter.toString());
+        ingredientsTv.setText(formatIngredients(recipe));
 
         if (recipeDetailContainer != null) {
             // The detail container view will be present only in the
@@ -142,7 +137,7 @@ public class RecipeDetailActivity extends AppCompatActivity {
                 int position = (int) view.getTag();
                 if (mTwoPane) {
                     Bundle arguments = new Bundle();
-                    arguments.putParcelable(Constants.STEP_KEY, mSteps.get(position));
+                    arguments.putParcelable(RecipeUtils.STEP_KEY, mSteps.get(position));
                     StepDetailFragment fragment = new StepDetailFragment();
                     fragment.setArguments(arguments);
                     mParentActivity.getSupportFragmentManager().beginTransaction()
@@ -151,7 +146,7 @@ public class RecipeDetailActivity extends AppCompatActivity {
                 } else {
                     Context context = view.getContext();
                     Intent intent = new Intent(context, StepDetailActivity.class);
-                    intent.putExtra(Constants.STEP_POS_KEY, position);
+                    intent.putExtra(RecipeUtils.STEP_POS_KEY, position);
                     intent.putParcelableArrayListExtra(STEP_LIST_KEY, (ArrayList<? extends Parcelable>) mSteps);
                     context.startActivity(intent);
                 }
