@@ -133,7 +133,6 @@ public class RecipeDetailActivity extends AppCompatActivity {
         private final View.OnClickListener mOnClickListener = new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // TODO: 17.04.2018 make card selected
                 int position = (int) view.getTag();
                 if (mTwoPane) {
                     Bundle arguments = new Bundle();
