@@ -28,17 +28,9 @@ import com.google.android.exoplayer2.util.Util;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-/**
- * A fragment representing a single Step detail screen.
- * This fragment is either contained in a {@link RecipeDetailActivity}
- * in two-pane mode (on tablets) or a {@link StepDetailActivity}
- * on handsets.
- */
 public class StepDetailFragment extends Fragment {
     private static String TAG = StepDetailFragment.class.getSimpleName();
-    /**
-     * The recipe Step this fragment is presenting.
-     */
+
     private Step step;
 
     @BindView(R.id.step_detail_tv)
@@ -52,10 +44,6 @@ public class StepDetailFragment extends Fragment {
 
     private SimpleExoPlayer player;
 
-    /**
-     * Mandatory empty constructor for the fragment manager to instantiate the
-     * fragment (e.g. upon screen orientation changes).
-     */
     public StepDetailFragment() {
     }
 
