@@ -36,6 +36,7 @@ ext {
 
     retrofitVersion = "2.4.0"
     picassoVersion = "2.71828"
+    exoplayerVersion = "2.7.1"
     butterknifeVersion = "8.8.1"
 }
 
