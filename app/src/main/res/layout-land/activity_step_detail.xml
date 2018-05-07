@@ -13,7 +13,8 @@
         android:layout_width="match_parent"
         android:layout_height="@dimen/app_bar_height"
         android:fitsSystemWindows="true"
-        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+        android:visibility="gone">
 
         <android.support.design.widget.CollapsingToolbarLayout
             android:id="@+id/toolbar_layout"
@@ -40,7 +41,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:fillViewport="true"
-        android:layout_margin="8dp"
         app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
     <android.support.design.widget.FloatingActionButton
@@ -51,6 +51,7 @@
         android:clickable="true"
         android:focusable="true"
         android:src="@drawable/ic_navigate_before_white_24dp"
+        android:visibility="gone"
         app:layout_anchor="@id/step_detail_container"
         app:layout_anchorGravity="bottom|start" />
 
@@ -62,6 +63,7 @@
         android:clickable="true"
         android:focusable="true"
         android:src="@drawable/ic_navigate_next_white_24dp"
+        android:visibility="gone"
         app:layout_anchor="@id/step_detail_container"
         app:layout_anchorGravity="bottom|end" />
 </android.support.design.widget.CoordinatorLayout>

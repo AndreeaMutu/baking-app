@@ -64,4 +64,15 @@ public class Step implements Parcelable {
             return new Step[size];
         }
     };
+
+    @Override
+    public String toString() {
+        return "Step{" +
+                "id=" + id +
+                ", shortDescription='" + shortDescription + '\'' +
+                ", description='" + description + '\'' +
+                ", videoURL='" + videoURL + '\'' +
+                ", thumbnailURL='" + thumbnailURL + '\'' +
+                '}';
+    }
 }

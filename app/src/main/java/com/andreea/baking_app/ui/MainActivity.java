@@ -1,12 +1,12 @@
 package com.andreea.baking_app.ui;
 
-import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
+import android.support.test.espresso.idling.CountingIdlingResource;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -16,10 +16,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.andreea.baking_app.R;
 import com.andreea.baking_app.model.Recipe;
+import com.andreea.baking_app.utils.NetworkUtils;
 import com.andreea.baking_app.viewmodel.RecipesViewModel;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
@@ -30,14 +32,21 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
+import static com.andreea.baking_app.utils.RecipeUtils.RECIPE_KEY;
+
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = MainActivity.class.getSimpleName();
     @BindView(R.id.toolbar)
     Toolbar toolbar;
     @BindView(R.id.recipe_list)
     RecyclerView recyclerView;
+    @BindView(R.id.recipes_loading_pb)
+    ProgressBar progressBar;
+    @BindView(android.R.id.content)
+    View snackbarView;
 
     private RecipesViewModel recipesViewModel;
+    private CountingIdlingResource recipesIdlingResource = new CountingIdlingResource("RecipesAvailable");;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,28 +58,33 @@ public class MainActivity extends AppCompatActivity {
         toolbar.setTitle(getTitle());
 
         recipesViewModel = ViewModelProviders.of(this).get(RecipesViewModel.class);
-
-        recipesViewModel.getRecipes().observe(this, new Observer<List<Recipe>>() {
-            @Override
-            public void onChanged(@Nullable List<Recipe> recipes) {
-                recyclerView.setAdapter(new RecipeListAdapter(recipes));
-            }
+        if (!NetworkUtils.isConnectedToNetwork(this)){
+            Snackbar.make(snackbarView, getString(R.string.no_internet_message), Snackbar.LENGTH_LONG).show();
+            return;
+        }
+        progressBar.setVisibility(View.VISIBLE);
+        recipesIdlingResource.increment();
+        recipesViewModel.getRecipes().observe(this, recipes -> {
+            recyclerView.setAdapter(new RecipeListAdapter(recipes));
+            progressBar.setVisibility(View.GONE);
+            recipesIdlingResource.decrement();
         });
+    }
+
+    public CountingIdlingResource getRecipesIdlingResource() {
+        return recipesIdlingResource;
     }
 
     public static class RecipeListAdapter
             extends RecyclerView.Adapter<RecipeListAdapter.ViewHolder> {
 
         private final List<Recipe> mValues;
-        private final View.OnClickListener mOnClickListener = new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Recipe item = (Recipe) view.getTag();
-                Context context = view.getContext();
-                Intent intent = new Intent(context, RecipeDetailActivity.class);
-                intent.putExtra("recipe", item);
-                context.startActivity(intent);
-            }
+        private final View.OnClickListener mOnClickListener = view -> {
+            Recipe item = (Recipe) view.getTag();
+            Context context = view.getContext();
+            Intent intent = new Intent(context, RecipeDetailActivity.class);
+            intent.putExtra(RECIPE_KEY, item);
+            context.startActivity(intent);
         };
 
         RecipeListAdapter(List<Recipe> items   ) {

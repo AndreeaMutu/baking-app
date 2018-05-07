@@ -3,6 +3,7 @@ package com.andreea.baking_app.ui;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NavUtils;
@@ -10,7 +11,6 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -19,13 +19,19 @@ import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import com.andreea.baking_app.R;
-import com.andreea.baking_app.dummy.DummyContent;
 import com.andreea.baking_app.model.Recipe;
+import com.andreea.baking_app.model.Step;
+import com.andreea.baking_app.utils.RecipeUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+
+import static com.andreea.baking_app.utils.RecipeUtils.RECIPE_KEY;
+import static com.andreea.baking_app.utils.RecipeUtils.STEP_LIST_KEY;
+import static com.andreea.baking_app.utils.RecipeUtils.formatIngredients;
 
 /**
  * An activity representing a list of Steps. This activity
@@ -48,26 +54,45 @@ public class RecipeDetailActivity extends AppCompatActivity {
     @BindView(R.id.step_detail_container)
     @Nullable
     FrameLayout recipeDetailContainer;
+    @BindView(R.id.step_list)
+    RecyclerView recyclerView;
+    @BindView(R.id.ingredients_title_tv)
+    TextView ingredientsTitleTv;
+    @BindView(R.id.recipe_ingredients_tv)
+    TextView ingredientsTv;
+
+    private Recipe recipe;
+    private Parcelable recyclerViewState;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_recipe_detail);
         ButterKnife.bind(this);
-        Intent intent = getIntent();
-        if (intent != null && intent.hasExtra("recipe")) {
-            Log.d(TAG, "onCreate: toolbar");
-            Recipe recipe = intent.getParcelableExtra("recipe");
-            toolbar.setTitle(recipe.getName());
+        if (savedInstanceState != null) {
+            recipe = savedInstanceState.getParcelable(RECIPE_KEY);
+        } else {
+            Intent intent = getIntent();
+            if (intent != null && intent.hasExtra(RECIPE_KEY)) {
+                recipe = intent.getParcelableExtra(RECIPE_KEY);
+            }
         }
+        if (recipe == null) {
+            return;
+        }
+        toolbar.setTitle(recipe.getName());
         setSupportActionBar(toolbar);
-
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
 
-        if (findViewById(R.id.step_detail_container) != null) {
+        if (recipe.getServings() != 0) {
+            ingredientsTitleTv.append(String.format(" (%s servings)", recipe.getServings()));
+        }
+        ingredientsTv.setText(formatIngredients(recipe));
+
+        if (recipeDetailContainer != null) {
             // The detail container view will be present only in the
             // large-screen layouts (res/values-w900dp).
             // If this view is present, then the
@@ -75,22 +100,20 @@ public class RecipeDetailActivity extends AppCompatActivity {
             mTwoPane = true;
         }
 
-        View recyclerView = findViewById(R.id.step_list);
         assert recyclerView != null;
-        setupRecyclerView((RecyclerView) recyclerView);
+        setupRecyclerView(recyclerView);
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putParcelable(RECIPE_KEY, recipe);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == android.R.id.home) {
-            // This ID represents the Home or Up button. In the case of this
-            // activity, the Up button is shown. Use NavUtils to allow users
-            // to navigate up one level in the application structure. For
-            // more details, see the Navigation pattern on Android Design:
-            //
-            // http://developer.android.com/design/patterns/navigation.html#up-vs-back
-            //
             NavUtils.navigateUpFromSameTask(this);
             return true;
         }
@@ -98,22 +121,23 @@ public class RecipeDetailActivity extends AppCompatActivity {
     }
 
     private void setupRecyclerView(@NonNull RecyclerView recyclerView) {
-        recyclerView.setAdapter(new SimpleItemRecyclerViewAdapter(this, DummyContent.ITEMS, mTwoPane));
+        recyclerView.setAdapter(new StepListAdapter(this, recipe.getSteps(), mTwoPane));
     }
 
-    public static class SimpleItemRecyclerViewAdapter
-            extends RecyclerView.Adapter<SimpleItemRecyclerViewAdapter.ViewHolder> {
+    public static class StepListAdapter
+            extends RecyclerView.Adapter<StepListAdapter.ViewHolder> {
 
         private final RecipeDetailActivity mParentActivity;
-        private final List<DummyContent.DummyItem> mValues;
+        private final List<Step> mSteps;
         private final boolean mTwoPane;
         private final View.OnClickListener mOnClickListener = new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                DummyContent.DummyItem item = (DummyContent.DummyItem) view.getTag();
+                // TODO: 17.04.2018 make card selected
+                int position = (int) view.getTag();
                 if (mTwoPane) {
                     Bundle arguments = new Bundle();
-                    arguments.putString(StepDetailFragment.ARG_ITEM_ID, item.id);
+                    arguments.putParcelable(RecipeUtils.STEP_KEY, mSteps.get(position));
                     StepDetailFragment fragment = new StepDetailFragment();
                     fragment.setArguments(arguments);
                     mParentActivity.getSupportFragmentManager().beginTransaction()
@@ -122,17 +146,17 @@ public class RecipeDetailActivity extends AppCompatActivity {
                 } else {
                     Context context = view.getContext();
                     Intent intent = new Intent(context, StepDetailActivity.class);
-                    intent.putExtra(StepDetailFragment.ARG_ITEM_ID, item.id);
-
+                    intent.putExtra(RecipeUtils.STEP_POS_KEY, position);
+                    intent.putParcelableArrayListExtra(STEP_LIST_KEY, (ArrayList<? extends Parcelable>) mSteps);
                     context.startActivity(intent);
                 }
             }
         };
 
-        SimpleItemRecyclerViewAdapter(RecipeDetailActivity parent,
-                                      List<DummyContent.DummyItem> items,
-                                      boolean twoPane) {
-            mValues = items;
+        StepListAdapter(RecipeDetailActivity parent,
+                        List<Step> items,
+                        boolean twoPane) {
+            mSteps = items;
             mParentActivity = parent;
             mTwoPane = twoPane;
         }
@@ -146,26 +170,28 @@ public class RecipeDetailActivity extends AppCompatActivity {
 
         @Override
         public void onBindViewHolder(final ViewHolder holder, int position) {
-            holder.mIdView.setText(mValues.get(position).id);
-            holder.mContentView.setText(mValues.get(position).content);
+            Step step = mSteps.get(position);
+            holder.mIdView.setText(String.valueOf(step.getId()));
+            holder.mContentView.setText(step.getShortDescription());
 
-            holder.itemView.setTag(mValues.get(position));
+            holder.itemView.setTag(position);
             holder.itemView.setOnClickListener(mOnClickListener);
         }
 
         @Override
         public int getItemCount() {
-            return mValues.size();
+            return mSteps.size();
         }
 
         class ViewHolder extends RecyclerView.ViewHolder {
-            final TextView mIdView;
-            final TextView mContentView;
+            @BindView(R.id.id_text)
+            TextView mIdView;
+            @BindView(R.id.content)
+            TextView mContentView;
 
             ViewHolder(View view) {
                 super(view);
-                mIdView = (TextView) view.findViewById(R.id.id_text);
-                mContentView = (TextView) view.findViewById(R.id.content);
+                ButterKnife.bind(this, itemView);
             }
         }
     }
