@@ -13,6 +13,7 @@
     tools:context=".ui.RecipeDetailActivity">
 
     <android.support.v4.widget.NestedScrollView
+        android:id="@+id/steps_scroll_view"
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="1">

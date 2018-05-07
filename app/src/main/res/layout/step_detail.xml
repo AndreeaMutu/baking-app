@@ -9,7 +9,15 @@
         android:id="@+id/video_view"
         android:layout_width="match_parent"
         android:layout_height="@dimen/player_height"
-        android:layout_marginBottom="@dimen/player_margin"/>
+        android:layout_marginBottom="@dimen/player_margin" />
+
+    <ImageView
+        android:id="@+id/step_thumbnail"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:scaleType="centerCrop"
+        android:layout_gravity="center_horizontal"
+        android:adjustViewBounds="true"/>
 
     <TextView
         android:id="@+id/step_detail_tv"

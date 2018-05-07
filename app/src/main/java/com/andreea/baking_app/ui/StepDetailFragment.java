@@ -6,9 +6,11 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.andreea.baking_app.R;
@@ -24,6 +26,9 @@ import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
 import com.google.android.exoplayer2.ui.PlayerView;
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory;
 import com.google.android.exoplayer2.util.Util;
+import com.squareup.picasso.Callback;
+import com.squareup.picasso.Picasso;
+import com.squareup.picasso.RequestCreator;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -38,6 +43,9 @@ public class StepDetailFragment extends Fragment {
 
     @BindView(R.id.video_view)
     PlayerView playerView;
+
+    @BindView(R.id.step_thumbnail)
+    ImageView stepThumbnail;
 
     private long playbackPosition;
     private boolean playWhenReady = true;
@@ -73,6 +81,27 @@ public class StepDetailFragment extends Fragment {
             if (appBarLayout != null) {
                 appBarLayout.setTitle(step.getShortDescription());
             }
+            Picasso picasso = Picasso.get();
+            RequestCreator request;
+            if (TextUtils.isEmpty(step.getThumbnailURL())) {
+                request = picasso.load(R.drawable.cake);
+            } else {
+                request = picasso.load(step.getThumbnailURL());
+            }
+
+            request.placeholder(android.R.drawable.progress_horizontal)
+                    .error(android.R.drawable.stat_notify_error)
+                    .into(stepThumbnail, new Callback() {
+                        @Override
+                        public void onSuccess() {
+                            Log.d(TAG, "Successfully loaded step thumbnail: ");
+                        }
+
+                        @Override
+                        public void onError(Exception e) {
+                            Log.e(TAG, "Failed to load step thumbnail: " + e);
+                        }
+                    });
         }
         return rootView;
     }
